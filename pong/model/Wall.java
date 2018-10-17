@@ -1,0 +1,23 @@
+package pong.model;
+
+public class Wall extends AbstractPositionable{
+
+
+
+    public enum Dir {
+        HORIZONTAL, VERTICAL;
+    }
+
+    private final Dir dir;
+
+
+    public Wall(double x, double y, double width, double height, Dir dir) {
+        super(x, y, width, height);
+        this.dir =  dir;
+    }
+
+    public Dir getDir() {
+        return dir;
+    }
+
+}
