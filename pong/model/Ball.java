@@ -10,13 +10,13 @@ import static pong.model.Pong.GAME_WIDTH;
  * A model class
  */
 public class Ball extends AbstractMovable  {
-
+     Random rand = new Random();
 
     private double height = BALL_WIDTH;
     private double width = BALL_HEIGHT;
 
-    public static final double BALL_WIDTH = 20;
-    public static final double BALL_HEIGHT = 20;
+    public static final double BALL_WIDTH = 40;
+    public static final double BALL_HEIGHT = 40;
 
 
     public Ball(double x, double y, double width, double height, double dx, double dy) {
@@ -27,6 +27,8 @@ public class Ball extends AbstractMovable  {
     public Ball(double x, double y) {
         this(x, y, BALL_WIDTH, BALL_HEIGHT, -8, -2);
     }
+
+
 
 
 

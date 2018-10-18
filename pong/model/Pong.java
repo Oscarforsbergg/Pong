@@ -3,9 +3,11 @@ package pong.model;
 
 import pong.event.Event;
 import pong.event.EventService;
+import pong.view.Assets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /*
  * Logic for the Pong Game
@@ -14,10 +16,11 @@ import java.util.List;
  *
  */
 public class Pong {
+    Random rand = new Random();
 
     public static final double GAME_WIDTH = 600;
     public static final double GAME_HEIGHT = 400;
-    public static final double BALL_SPEED_FACTOR = 1.02;
+    public static final double BALL_SPEED_FACTOR = 1.05;
     public static final long HALF_SEC = 500_000_000;
 
 
@@ -27,36 +30,113 @@ public class Pong {
     private Ball ball;
     private Paddle rightPaddle;
     private Paddle leftPaddle;
+    private final List<Wall> walls;
 
-    public Pong(Ball ball, Paddle rightPaddle, Paddle leftPaddle, Wall topWall, Wall bottomWall){
+    public Pong(Ball ball, Paddle rightPaddle, Paddle leftPaddle, List<Wall> walls){
         this.ball = ball;
         this.rightPaddle = rightPaddle;
         this.leftPaddle = leftPaddle;
+        this.walls = walls;
 
     }
     // TODO Constructor
 
     // --------  Game Logic -------------
 
-    private long timeForLastHit;         // To avoid multiple collisions
+    private long timeForLastHit = HALF_SEC;         // To avoid multiple collisions
 
     public void update(long now) {
         ball.move();
-        if (ball.getX() > GAME_HEIGHT || ball.getX() < 0) {
+        Event event = new Event(Event.Type.BALL_HIT_PADDLE);
+
+        /*if (ball.getX() > GAME_HEIGHT || ball.getX() < 0) {
             if (ball.getX() > 0){
-                this.pointsRight++;
+                this.pointsLeft++;
             }
             else{
-                this.pointsLeft++;
+                this.pointsRight++;
             }
             ball.setX(300 - (Ball.BALL_WIDTH / 2));
             ball.setY(200 - (Ball.BALL_HEIGHT /2));
+        }*/
+
+
+        if (ball.intersect(walls.get(3))){
+            this.pointsLeft++;
+        } else if (ball.intersect(walls.get(2))){
+            this.pointsRight++;
+        }
+        if (isTimer(timeForLastHit)) {
+            rightPaddle.move();
+            if (ball.intersect(rightPaddle)) {
+
+                EventService.add(event);
+                //ball.setDy(-(ball.getDy()));
+                ball.setX(ball.getX() - 23);
+                ball.setDx(-(ball.getDx()) * BALL_SPEED_FACTOR);
+            }
+
+            leftPaddle.move();
+            if (ball.intersect(leftPaddle)) {
+                EventService.add(event);
+                //ball.setDy(-(ball.getDy()));
+                ball.setX(ball.getX() + 23); // detta funkar ist för timelasthit
+                ball.setDx(-(ball.getDx()) * BALL_SPEED_FACTOR);
+            }
+            timeForLastHit = HALF_SEC;
         }
 
+
+        for(Wall w : walls) {
+            if (ball.intersect(w)) {
+                if (w.getDir() == Wall.Dir.HORIZONTAL) {
+                    ball.setDy(-ball.getDy());
+
+                } else {              //vertical
+
+                    ball.setX(300);
+                    ball.setY(200);
+                    ball.setDx(-8);
+                    ball.setDy(-2);
+                    int temp = rand.nextInt(2);
+                    if (temp == 1) {
+                        ball.setDx(-(ball.getDx()));
+
+                    }
+                    int temp2 = rand.nextInt(2);
+                    if (temp2 == 1) {
+                        ball.setDy(-(ball.getDy()));
+
+
+                    }
+
+                }
+            }
+            if (leftPaddle.intersect(w)) {
+                if (leftPaddle.getY() < 100) {
+                    leftPaddle.setY(Paddle.PADDLE_HEIGHT / 100);
+                } else {
+                    leftPaddle.setY(GAME_HEIGHT - 2 - Paddle.PADDLE_HEIGHT);
+                }
+            }
+            if (rightPaddle.intersect(w)) {
+                if (rightPaddle.getY() < 100) {
+                    rightPaddle.setY(Paddle.PADDLE_HEIGHT / 100);
+                } else {
+                    rightPaddle.setY(GAME_HEIGHT - 2 - Paddle.PADDLE_HEIGHT);
+                }
+
+            }
+        }
 
       // TODO Most game logic here, i.e. move paddles etc.
     }
 
+    public boolean isTimer(long now){
+        timeForLastHit = timeForLastHit - (HALF_SEC/100);
+        return (timeForLastHit > 0);
+
+    }
 
 
     // --- Used by GUI  ------------------------
@@ -80,9 +160,16 @@ public class Pong {
 
     public void setSpeedRightPaddle(double dy) {
         // TODO
+        rightPaddle.setDy(dy);
     }
 
     public void setSpeedLeftPaddle(double dy) {
         // TODO
+        leftPaddle.setDy(dy);
     }
+
+
+
+
+
 }

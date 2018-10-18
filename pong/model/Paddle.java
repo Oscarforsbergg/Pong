@@ -9,9 +9,9 @@ import static pong.model.Pong.GAME_HEIGHT;
  */
 public class Paddle extends AbstractMovable  {
 
-    public static final double PADDLE_SPEED = 3;
-    public static final double PADDLE_HEIGHT = 40;
-    public static final double PADDLE_WIDTH = 20;
+    public static final double PADDLE_SPEED = 5;
+    public static final double PADDLE_HEIGHT = 60;
+    public static final double PADDLE_WIDTH = 10;
 
 
     public Paddle(double x, double y, double width, double height, double dx, double dy) {
@@ -19,10 +19,10 @@ public class Paddle extends AbstractMovable  {
     }
 
     public Paddle(double x, double y) {
-        this(x, y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, 2);
+        this(x, y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, 0);
     }
 
     public void move(){
-        setX(getX() + getDx());
+        setY(getY() + getDy());
     }
 }

@@ -21,6 +21,10 @@ import pong.event.EventService;
 import pong.view.theme.Cool;
 import pong.view.theme.Duckie;
 
+import java.applet.AudioClip;
+import java.util.Arrays;
+import java.util.List;
+
 import static java.lang.System.out;
 import static pong.model.Paddle.PADDLE_HEIGHT;
 import static pong.model.Paddle.PADDLE_SPEED;
@@ -42,6 +46,7 @@ public class PongGUI extends Application {
     private Pong pong;                  // The OO model (the data and logic for the game)
     private boolean running = false;    // Is game running?
 
+
     // ------- Keyboard handling ----------------------------------
 
     private void keyPressed(KeyEvent event) {
@@ -51,16 +56,20 @@ public class PongGUI extends Application {
         KeyCode kc = event.getCode();
         switch (kc) {
             case UP:
+                pong.setSpeedRightPaddle(-PADDLE_SPEED);
                // TODO
                 break;
             case DOWN:
+                pong.setSpeedRightPaddle(PADDLE_SPEED);
                 // TODO
                 break;
             case Q:
                 // TODO
+                pong.setSpeedLeftPaddle(-PADDLE_SPEED);
                 break;
             case A:
                // TODO
+                pong.setSpeedLeftPaddle(PADDLE_SPEED);
                 break;
             default:  // Nothing
         }
@@ -73,11 +82,17 @@ public class PongGUI extends Application {
         KeyCode kc = event.getCode();
         switch (kc) {
             case UP:
+                pong.setSpeedRightPaddle(0);
+                break;
             case DOWN:
+                pong.setSpeedRightPaddle(0);
                // TODO
                 break;
             case A:
+                pong.setSpeedLeftPaddle(0);
+                break;
             case Q:
+                pong.setSpeedLeftPaddle(0);
               // TODO
                 break;
             default: // Nothing
@@ -114,10 +129,15 @@ public class PongGUI extends Application {
         Paddle leftPaddle = new Paddle(30 - (PADDLE_WIDTH / 2),200 - (PADDLE_HEIGHT / 2));
         Ball ball = new Ball(300 - (Ball.BALL_WIDTH / 2),200 - (Ball.BALL_HEIGHT /2));
 
-        Wall topwall = new Wall(0,0,GAME_WIDTH,1, Wall.Dir.HORIZONTAL);
-        Wall bottomwall = new Wall(0,GAME_HEIGHT,GAME_WIDTH,1, Wall.Dir.HORIZONTAL); //See if these works after we apply physics
+        Wall top = new Wall(0,-2,GAME_WIDTH,2, Wall.Dir.HORIZONTAL);
+        Wall bottom = new Wall(0,GAME_HEIGHT,GAME_WIDTH,2, Wall.Dir.HORIZONTAL); //See if these works after we apply physics
+        Wall right = new Wall(GAME_WIDTH + 80,0,2,GAME_HEIGHT, Wall.Dir.VERTICAL);
+        Wall left = new Wall(-80,0,2,GAME_HEIGHT, Wall.Dir.VERTICAL);
 
-        pong = new Pong(ball, rightPaddle, leftPaddle, topwall, bottomwall);
+        List<Wall> walls = Arrays.asList(top, bottom, left, right);
+
+
+        pong = new Pong(ball, rightPaddle, leftPaddle, walls);
 
         // TODO Construct the model
 
@@ -148,6 +168,7 @@ public class PongGUI extends Application {
             assets.ballHitPaddle.play();
         } else if (evt.type == Event.Type.BALL_HIT_WALL_CEILING) {
             // TODO Optional
+
         }
     }
 
